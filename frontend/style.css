@@ -1,0 +1,68 @@
+:root {
+  --bg-color: #1b2838;
+  --panel-color: #171a21;
+  --text-color: #c7d5e0;
+  --accent-color: #66c0f4;
+  --card-hover: rgba(102,192,244,0.15);
+  --border-radius: 6px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+header {
+  background-color: var(--panel-color);
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.game-card {
+  background-color: var(--panel-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.game-card:hover {
+  background-color: var(--card-hover);
+}
+
+.game-card img {
+  display: block;
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.game-card h2 {
+  font-size: 1rem;
+  margin: 0.5rem;
+  color: var(--text-color);
+}
+
+.game-card a {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.game-card a:hover {
+  text-decoration: underline;
+}

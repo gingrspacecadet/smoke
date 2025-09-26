@@ -1,0 +1,8 @@
+{
+  "name": "frontend",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  }
+}

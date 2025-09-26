@@ -1,0 +1,12 @@
+name = "smoke"
+compatibility_date = "2025-07-18"
+main = "worker.js"
+
+[dev]
+ip = "127.0.0.1"
+port = 8787
+
+[[d1_databases]]
+binding = "DB"
+database_name = "smoke"
+database_id = "c41273d8-c3e2-428f-99da-8535af429287"
