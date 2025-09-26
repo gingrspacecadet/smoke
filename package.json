@@ -1,7 +1,7 @@
 {
   "name": "smoke",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "main": "frontend/main.js",
   "description": "A desktop game launcher built with Electron.",
   "author": {
@@ -40,17 +40,9 @@
     "linux": {
       "target": [
         "AppImage",
-        "deb",
-        "rpm",
-        "tar.gz"
+        "deb"
       ],
       "category": "Game"
-    },
-    "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ]
     },
     "publish": [
       {
@@ -60,12 +52,9 @@
         "releaseType": "draft",
         "files": [
           "**/*.exe",
+          "**/*.zip",
           "**/*.AppImage",
-          "**/*.deb",
-          "**/*.rpm",
-          "**/*.tar.gz",
-          "**/*.dmg",
-          "**/*.zip"
+          "**/*.deb"
         ]
       }
     ]
