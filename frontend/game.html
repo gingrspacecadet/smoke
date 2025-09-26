@@ -132,6 +132,10 @@
           // Install complete
           window.electronAPI.onInstallComplete((event, filename) => {
             progress.textContent = `Installation complete: ${filename}`;
+            // Redirect to library.html with game name in URL
+            setTimeout(() => {
+              window.location.href = `library.html?selected=${encodeURIComponent(g.name)}`;
+            }, 1200);
           });
 
           window.electronAPI.onInstallError((event, filename) => {

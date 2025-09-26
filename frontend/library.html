@@ -139,6 +139,10 @@ async function loadLibrary() {
   const overlayTitle = document.getElementById('overlay-title');
   const playBtn = document.getElementById('play-btn');
 
+  // Parse URL params for auto-select
+  const params = new URLSearchParams(window.location.search);
+  const selectedGame = params.get('selected');
+
   try {
     const games = await window.electronAPI.listInstalledGames();
     if (!games.length) {
@@ -147,6 +151,7 @@ async function loadLibrary() {
     }
 
     container.innerHTML = '';
+    let autoSelected = false;
     games.forEach(g => {
       const card = document.createElement('div');
       card.className = 'game-card';
@@ -163,7 +168,6 @@ async function loadLibrary() {
       card.appendChild(title);
 
       card.addEventListener('click', () => {
-        // populate overlay
         overlayImg.src = img.src;
         overlayTitle.textContent = g.name;
         playBtn.onclick = () => {
@@ -174,6 +178,14 @@ async function loadLibrary() {
       });
 
       container.appendChild(card);
+
+      // Auto-select if matches URL param
+      if (!autoSelected && selectedGame && g.name === selectedGame) {
+        setTimeout(() => {
+          card.click();
+        }, 300);
+        autoSelected = true;
+      }
     });
 
     overlay.addEventListener('click', (e) => {

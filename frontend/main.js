@@ -97,8 +97,8 @@ ipcMain.handle('list-installed-games', async () => {
   if (!fs.existsSync(APPS_DIR)) return [];
 
   const dirs = fs.readdirSync(APPS_DIR, { withFileTypes: true })
-                 .filter(d => d.isDirectory())
-                 .map(d => d.name);
+    .filter(d => d.isDirectory() && /^[\w]/.test(d.name) && !d.name.startsWith('_'))
+    .map(d => d.name);
 
   return dirs.map(name => {
     const gameDir = path.join(APPS_DIR, name);
@@ -111,7 +111,11 @@ ipcMain.handle('list-installed-games', async () => {
 ipcMain.handle('run-game', async (_, name) => {
   const exePath = path.join(APPS_DIR, name, `${name}.exe`);
   if (!fs.existsSync(exePath)) throw new Error('Game executable not found');
-  spawn(exePath, { detached: true, stdio: 'ignore' }).unref();
+  if (process.platform === 'linux') {
+    spawn('wine', [exePath], { detached: true, stdio: 'ignore' }).unref();
+  } else {
+    spawn(exePath, { detached: true, stdio: 'ignore' }).unref();
+  }
   return true;
 });
 
