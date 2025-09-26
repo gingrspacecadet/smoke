@@ -1,5 +1,5 @@
 async function loadGames() {
-  const res = await fetch('http://localhost:8787/api/games');
+  const res = await fetch('https://smoke.gingr.workers.dev/api/games');
   const games = await res.json();
   const container = document.getElementById('games');
   container.innerHTML = '';

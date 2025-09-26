@@ -78,7 +78,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:8787/api/games/${id}`);
+        const res = await fetch(`https://smoke.gingr.workers.dev/api/games/${id}`);
         if (!res.ok) throw new Error(res.statusText);
         const g = await res.json();
 
