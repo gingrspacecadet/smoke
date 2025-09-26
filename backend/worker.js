@@ -4,7 +4,7 @@ export default {
 
     if (url.pathname === '/api/games') {
       const { results } = await env.DB.prepare(
-        'SELECT id, name, cover_uri, download_url FROM games'
+        'SELECT id, name, cover_url, download_url FROM games'
       ).all();
 
       return new Response(JSON.stringify(results), {
@@ -19,7 +19,7 @@ export default {
     if (match) {
       const id = Number(match[1]);
       const { results } = await env.DB.prepare(
-        'SELECT id, name, cover_uri, download_url FROM games WHERE id = ?'
+        'SELECT id, name, cover_url, download_url FROM games WHERE id = ?'
       ).bind(id).all();
 
       if (!results.length) {

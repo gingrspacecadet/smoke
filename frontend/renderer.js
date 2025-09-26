@@ -8,7 +8,7 @@ async function loadGames() {
     const card = document.createElement('div');
     card.className = 'game-card';
     card.innerHTML = `
-      <img src="${g.cover_uri}" alt="${g.name}" class="cover">
+      <img src="${g.cover_url}" alt="${g.name}" class="cover">
       <h2>${g.name}</h2>
       <a href="game.html?id=${g.id}">View</a>
     `;

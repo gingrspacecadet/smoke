@@ -30,6 +30,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, 'index.html')).catch(err => console.error(err));
+  mainWindow.webContents.openDevTools({ mode: 'detach' });
 }
 
 // --- Helper: Install (extract) archive per file ---
@@ -96,8 +97,8 @@ ipcMain.handle('list-installed-games', async () => {
   if (!fs.existsSync(APPS_DIR)) return [];
 
   const dirs = fs.readdirSync(APPS_DIR, { withFileTypes: true })
-    .filter(d => d.isDirectory() && d.name.match(/^[a-zA-Z0-9]/)) // Only names starting with alphanumeric
-    .map(d => d.name);
+                 .filter(d => d.isDirectory())
+                 .map(d => d.name);
 
   return dirs.map(name => {
     const gameDir = path.join(APPS_DIR, name);
@@ -110,12 +111,7 @@ ipcMain.handle('list-installed-games', async () => {
 ipcMain.handle('run-game', async (_, name) => {
   const exePath = path.join(APPS_DIR, name, `${name}.exe`);
   if (!fs.existsSync(exePath)) throw new Error('Game executable not found');
-
-  if (process.platform === 'linux') {
-    spawn('wine', [exePath], { detached: true, stdio: 'ignore' }).unref();
-  } else {
-    spawn(exePath, { detached: true, stdio: 'ignore' }).unref();
-  }
+  spawn(exePath, { detached: true, stdio: 'ignore' }).unref();
   return true;
 });
 
