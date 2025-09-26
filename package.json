@@ -51,24 +51,7 @@
         "dmg",
         "zip"
       ]
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "gingrspacecadet",
-        "repo": "smoke",
-        "releaseType": "draft",
-        "files": [
-          "**/*.exe",
-          "**/*.AppImage",
-          "**/*.deb",
-          "**/*.rpm",
-          "**/*.tar.gz",
-          "**/*.dmg",
-          "**/*.zip"
-        ]
-      }
-    ]
+    }
   },
   "scripts": {
     "dev:backend": "cd backend && npx wrangler dev --local --port 8787",
