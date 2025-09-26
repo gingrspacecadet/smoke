@@ -32,22 +32,48 @@
       "resources/**"
     ],
     "win": {
-      "target": "nsis"
+      "target": [
+        "nsis",
+        "zip"
+      ]
     },
     "linux": {
-      "target": ["AppImage","deb"],
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "tar.gz"
+      ],
       "category": "Game"
-    }
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "gingrspacecadet",
+        "repo": "smoke",
+        "releaseType": "draft",
+        "files": [
+          "**/*.exe",
+          "**/*.AppImage",
+          "**/*.deb",
+          "**/*.rpm",
+          "**/*.tar.gz",
+          "**/*.dmg",
+          "**/*.zip"
+        ]
+      }
+    ]
   },
   "scripts": {
     "dev:backend": "cd backend && npx wrangler dev --local --port 8787",
     "dev:frontend": "cd frontend && npx electron .",
     "dev": "concurrently --kill-others-on-fail \"npm:dev:backend\" \"npm:dev:frontend\"",
     "dist": "electron-builder"
-  },
-  "dependencies": {
-    "mime-types": "^3.0.1",
-    "tar": "^7.5.1",
-    "unzipper": "^0.12.3"
   }
 }
