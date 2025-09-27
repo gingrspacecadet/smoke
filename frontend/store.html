@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">STORE</div>
+    <div class="header-right">
+      <input id="search" class="search" placeholder="Search the store…" />
+      <a href="library.html">Go to Library</a>
+    </div>
+  </header>
+  <div id="library">Loading…</div>
+
+  <div id="overlay" style="display:none;">
+    <div id="overlay-content">
+      <img id="overlay-img" src="" alt="Game Cover">
+      <h2 id="overlay-title"></h2>
+      <div id="overlay-actions">
+        <button id="download-btn" style="display:none;">Download</button>
+        <button id="install-btn" style="display:none;">Install</button>
+        <button id="play-btn" style="display:none;">Play</button>
+        <button id="library-btn">Go to Library</button>
+      </div>
+      <p id="progress"></p>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+  <script src="store.js"></script>
+</body>
+</html>

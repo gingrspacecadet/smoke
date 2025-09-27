@@ -29,8 +29,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'index.html')).catch(err => console.error(err));
-  mainWindow.webContents.openDevTools({ mode: 'detach' });
+  mainWindow.loadFile(path.join(__dirname, 'store.html')).catch(err => console.error(err));
 }
 
 // --- Helper: Install (extract) archive per file ---
@@ -68,6 +67,53 @@ function installArchive(srcFile, destDir, event) {
 
   extractor.on('close', (code) => {
     if (code === 0) {
+      // Mark .exe as executable on Linux/macOS
+      if (process.platform !== 'win32') {
+        const base = path.basename(srcFile, path.extname(srcFile));
+
+        // Build candidate exe paths to try, in order of preference.
+        // We won't construct folder names that contain spaces; instead we try
+        // the most common layouts and then fall back to a normalized recursive search.
+        const candidates = [];
+
+        // 1) destDir/<base>/<base>.exe  (typical if archive contains a folder named exactly)
+        candidates.push(path.join(destDir, base, `${base}.exe`));
+
+        // 2) destDir/<base-without-underscores-or-dashes>/<name>.exe
+        const squished = base.replace(/[-_]/g, '');
+        if (squished !== base) candidates.push(path.join(destDir, squished, `${squished}.exe`));
+
+        // 3) destDir/<base>.exe (extracted at root)
+        candidates.push(path.join(destDir, `${base}.exe`));
+
+        // Try candidates
+        let found = null;
+        for (const c of candidates) {
+          try {
+            fs.accessSync(c, fs.constants.F_OK);
+            found = c;
+            break;
+          } catch (e) {
+            // continue
+          }
+        }
+
+        // Last resort: search recursively for any exe that matches base (normalization-only)
+        if (!found) {
+          const searched = findExeRecursive(destDir, base);
+          if (searched) found = searched;
+        }
+
+        if (found) {
+          try {
+            fs.chmodSync(found, 0o755);
+          } catch (err) {
+            console.error('Failed to chmod exe:', found, err);
+          }
+        } else {
+          console.error('Could not find extracted exe to chmod under', destDir, 'for', base);
+        }
+      }
       event.sender.send('install-complete', path.basename(srcFile));
     } else {
       event.sender.send('install-error', `7z exited with code ${code}`);
@@ -92,6 +138,48 @@ function findCoverRecursive(dir) {
   return null;
 }
 
+// Find an .exe under dir. If base is provided, prefer files that match or contain the base name.
+function findExeRecursive(dir, base) {
+  const exes = [];
+
+  function walk(curr) {
+    let entries;
+    try {
+      entries = fs.readdirSync(curr, { withFileTypes: true });
+    } catch (err) {
+      return;
+    }
+
+    for (const entry of entries) {
+      const full = path.join(curr, entry.name);
+      if (entry.isFile() && entry.name.toLowerCase().endsWith('.exe')) {
+        exes.push(full);
+      } else if (entry.isDirectory()) {
+        walk(full);
+      }
+    }
+  }
+
+  walk(dir);
+
+  if (!exes.length) return null;
+
+  if (base) {
+    // Normalize function: ignore '-', '_' and spaces for matching (remove them).
+    const normalize = s => s.toLowerCase().replace(/[-_\s]/g, '');
+    const baseKey = normalize(base);
+
+    // prefer exact (after normalization), then contains, else first
+    const exact = exes.find(p => normalize(path.basename(p, '.exe')) === baseKey);
+    if (exact) return exact;
+
+    const contains = exes.find(p => normalize(path.basename(p, '.exe')).includes(baseKey));
+    if (contains) return contains;
+  }
+
+  return exes[0];
+}
+
 // List installed games with optional cover image
 ipcMain.handle('list-installed-games', async () => {
   if (!fs.existsSync(APPS_DIR)) return [];
@@ -100,17 +188,34 @@ ipcMain.handle('list-installed-games', async () => {
     .filter(d => d.isDirectory() && /^[\w]/.test(d.name) && !d.name.startsWith('_'))
     .map(d => d.name);
 
-  return dirs.map(name => {
-    const gameDir = path.join(APPS_DIR, name);
-    const cover = findCoverRecursive(gameDir); // recursively find image
-    return { name, cover };
-  });
+  const games = dirs
+    .filter(name => {
+      // consider installed if an executable exists under the app dir that matches the name
+      const gameDir = path.join(APPS_DIR, name);
+      const foundExe = findExeRecursive(gameDir, name);
+      return !!foundExe;
+    })
+    .map(name => {
+      const gameDir = path.join(APPS_DIR, name);
+      const cover = findCoverRecursive(gameDir); // recursively find image
+      return { name, cover };
+    });
+
+  // Sort alphabetically by name (case-insensitive)
+  games.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+  return games;
 });
 
 // Run a game
 ipcMain.handle('run-game', async (_, name) => {
-  const exePath = path.join(APPS_DIR, name, `${name}.exe`);
-  if (!fs.existsSync(exePath)) throw new Error('Game executable not found');
+  const gameDir = path.join(APPS_DIR, name);
+  // try the straightforward path first, then fall back to recursive lookup that ignores - _ and spaces
+  let exePath = path.join(gameDir, `${name}.exe`);
+  if (!fs.existsSync(exePath)) {
+    exePath = findExeRecursive(gameDir, name);
+  }
+  if (!exePath) throw new Error('Game executable not found');
   if (process.platform === 'linux') {
     spawn('wine', [exePath], { detached: true, stdio: 'ignore' }).unref();
   } else {

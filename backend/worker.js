@@ -4,7 +4,7 @@ export default {
 
     if (url.pathname === '/api/games') {
       const { results } = await env.DB.prepare(
-        'SELECT id, name, cover_url, download_url FROM games'
+        'SELECT id, name, cover_url, download_url FROM games ORDER BY name COLLATE NOCASE'
       ).all();
 
       return new Response(JSON.stringify(results), {

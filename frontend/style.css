@@ -1,178 +1,148 @@
+/* Themed link styles */
+a {
+  color: var(--highlight);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.3em 0.7em;
+  border-radius: var(--radius);
+  background: transparent;
+  transition: background 0.2s, color 0.2s;
+  margin-left: auto;
+  float: none;
+}
+a:hover {
+  background: var(--highlight);
+  color: #171a21;
+}
 
 :root {
-  --bg-color: #171a21;
-  --panel-color: rgba(36, 41, 46, 0.95);
-  --panel-glass: linear-gradient(135deg, rgba(36,41,46,0.98) 80%, rgba(102,192,244,0.08) 100%);
-  --text-color: #c7d5e0;
-  --accent-color: #66c0f4;
-  --accent-dark: #417a9b;
-  --card-hover: rgba(102,192,244,0.18);
-  --border-radius: 8px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.6);
+  --bg-dark: #141b24;
+  --panel-dark: #1b2838;
+  --highlight: #66c0f4;
+  --text: #c7d5e0;
+  --radius: 4px;
 }
 
-
-html, body {
+body {
   margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', 'Arial', sans-serif;
-  background: radial-gradient(ellipse at top left, #23262e 0%, #171a21 100%);
-  color: var(--text-color);
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: #c7d5e0;
-  text-shadow: 0 2px 12px #000, 0 0 8px var(--accent-color);
-  letter-spacing: 1px;
-  margin: 2rem 0 1rem 0;
-  padding: 0.2rem 1.5rem;
-  border-radius: 8px;
-  background: linear-gradient(90deg, rgba(36,41,46,0.95) 80%, rgba(102,192,244,0.08) 100%);
-  display: inline-block;
-}
-
-a {
-  color: var(--accent-color);
-  background: rgba(102,192,244,0.08);
-  border-radius: 6px;
-  padding: 0.5rem 1.5rem;
-  text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  margin: 0.5rem 0.5rem 1.5rem 0.5rem;
-  display: inline-block;
-}
-
-a:hover {
-  background: var(--accent-color);
-  color: #171a21;
-  box-shadow: 0 4px 16px rgba(102,192,244,0.25);
-  text-decoration: none;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text);
 }
 
 header {
-  background: var(--panel-glass);
-  box-shadow: var(--shadow);
-  padding: 1.2rem 2.5rem;
-  font-size: 1.7rem;
+  background-color: var(--panel-dark);
+  padding: 1rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  letter-spacing: 1px;
-  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-#games {
+.header-left { flex: 1; }
+.header-right { display: flex; gap: 0.75rem; align-items: center; }
+
+.search {
+  background: #0f151b;
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--text);
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  min-width: 200px;
+}
+.search::placeholder { color: #7f94a6; }
+
+#library {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
+  grid-auto-rows: auto;
+  grid-auto-flow: dense;
+  gap: 1rem;
+  padding: 1rem;
+  align-content: start;
+  transition: filter .3s ease;
 }
-
-
-
-
-
-
-
 
 .game-card {
-  background: linear-gradient(135deg, #23262e 0%, #171a21 70%, rgba(102,192,244,0.10) 100%);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  border: 1px solid #222;
-  transition: box-shadow 0.3s, transform 0.3s;
   position: relative;
-  background-size: 200% 200%;
-  background-position: 0% 50%;
-}
-
-.game-card.animate-gradient {
-  animation: card-gradient-expand 0.75s ease-in-out 0s 1 normal forwards;
-}
-
-.game-card.shrink-gradient {
-  animation: card-gradient-shrink 0.75s ease-in-out 0s 1 normal forwards;
+  background-color: var(--panel-dark);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .game-card:hover {
-  box-shadow: 0 8px 32px rgba(0,0,0,0.8);
   transform: scale(1.03);
-}
-
-@keyframes card-gradient-expand {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes card-gradient-shrink {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes card-gradient-climax {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes card-gradient-climax-hover {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
 }
 
 .game-card img {
-  display: block;
   width: 100%;
-  height: 220px;
+  height: 280px;
   object-fit: cover;
-  border-bottom: 1px solid #222;
+  display: block;
 }
 
-.game-card h2 {
-  font-size: 1.1rem;
-  margin: 0.7rem 0 0.3rem 0;
-  color: var(--text-color);
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.game-card a {
-  display: inline-block;
-  margin-bottom: 0.7rem;
-  color: var(--accent-color);
-  background: rgba(102,192,244,0.08);
-  border-radius: 4px;
-  padding: 0.3rem 1.2rem;
-  text-decoration: none;
+.game-title {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: var(--text);
   font-size: 1rem;
-  font-weight: 500;
-  transition: background 0.2s, color 0.2s;
+  padding: .5rem;
+  text-shadow: 0 1px 2px black;
+  box-sizing: border-box;
 }
 
-.game-card a:hover {
-  background: var(--accent-color);
-  color: #171a21;
-  text-decoration: none;
+/* Overlay for expanded view */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+#overlay-content {
+  background: var(--panel-dark);
+  padding: 2rem;
+  border-radius: var(--radius);
+  max-width: 800px;
+  width: 90%;
+  text-align: center;
+}
+
+#overlay-content img {
+  max-width: 100%;
+  max-height: 50vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+}
+
+#overlay-content h2 {
+  margin: 1rem 0;
+}
+
+#overlay-content button {
+  background-color: var(--highlight);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.75rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+
+#overlay-content button:hover {
+  background-color: #4aa0d0;
 }

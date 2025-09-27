@@ -4,123 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Your Library</title>
-<style>
-:root {
-  --bg-dark: #141b24;
-  --panel-dark: #1b2838;
-  --highlight: #66c0f4;
-  --text: #c7d5e0;
-  --radius: 4px;
-}
-
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text);
-}
-
-header {
-  background-color: var(--panel-dark);
-  padding: 1rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-#library {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-  transition: filter .3s ease;
-}
-
-.game-card {
-  position: relative;
-  background-color: var(--panel-dark);
-  border-radius: var(--radius);
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-
-.game-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-}
-
-.game-card img {
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  display: block;
-}
-
-.game-title {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  color: var(--text);
-  font-size: 1rem;
-  padding: .5rem;
-  text-shadow: 0 1px 2px black;
-  box-sizing: border-box;
-}
-
-/* Overlay for expanded view */
-#overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-#overlay-content {
-  background: var(--panel-dark);
-  padding: 2rem;
-  border-radius: var(--radius);
-  max-width: 800px;
-  width: 90%;
-  text-align: center;
-}
-
-#overlay-content img {
-  max-width: 100%;
-  max-height: 50vh;
-  object-fit: contain;
-  border-radius: var(--radius);
-}
-
-#overlay-content h2 {
-  margin: 1rem 0;
-}
-
-#overlay-content button {
-  background-color: var(--highlight);
-  color: #000;
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.75rem 2rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background-color .2s ease;
-}
-
-#overlay-content button:hover {
-  background-color: #4aa0d0;
-}
-</style>
+<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-<header>YOUR LIBRARY</header>
+<header>
+  <div class="header-left">YOUR LIBRARY</div>
+  <div class="header-right">
+    <input id="search" class="search" placeholder="Search your library…" />
+    <a href="store.html">Go to Store</a>
+  </div>
+</header>
 <div id="library">Loading…</div>
 
 <div id="overlay">
@@ -131,74 +24,6 @@ header {
   </div>
 </div>
 
-<script>
-async function loadLibrary() {
-  const container = document.getElementById('library');
-  const overlay = document.getElementById('overlay');
-  const overlayImg = document.getElementById('overlay-img');
-  const overlayTitle = document.getElementById('overlay-title');
-  const playBtn = document.getElementById('play-btn');
-
-  // Parse URL params for auto-select
-  const params = new URLSearchParams(window.location.search);
-  const selectedGame = params.get('selected');
-
-  try {
-    const games = await window.electronAPI.listInstalledGames();
-    if (!games.length) {
-      container.textContent = 'No games installed.';
-      return;
-    }
-
-    container.innerHTML = '';
-    let autoSelected = false;
-    games.forEach(g => {
-      const card = document.createElement('div');
-      card.className = 'game-card';
-
-      const img = document.createElement('img');
-      img.src = g.cover ? `file://${g.cover}` : 'placeholder.jpg';
-      img.alt = g.name;
-
-      const title = document.createElement('div');
-      title.className = 'game-title';
-      title.textContent = g.name;
-
-      card.appendChild(img);
-      card.appendChild(title);
-
-      card.addEventListener('click', () => {
-        overlayImg.src = img.src;
-        overlayTitle.textContent = g.name;
-        playBtn.onclick = () => {
-          window.electronAPI.runGame(g.name);
-          overlay.style.display = 'none';
-        };
-        overlay.style.display = 'flex';
-      });
-
-      container.appendChild(card);
-
-      // Auto-select if matches URL param
-      if (!autoSelected && selectedGame && g.name === selectedGame) {
-        setTimeout(() => {
-          card.click();
-        }, 300);
-        autoSelected = true;
-      }
-    });
-
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) overlay.style.display = 'none';
-    });
-
-  } catch (err) {
-    console.error(err);
-    container.textContent = 'Error loading library.';
-  }
-}
-
-loadLibrary();
-</script>
+<script src="library.js"></script>
 </body>
 </html>
