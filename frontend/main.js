@@ -41,7 +41,8 @@ function installArchive(srcFile, destDir, event) {
   const binName = process.platform === 'win32'
     ? '7z.exe'
     : '7z'; // Linux/macOS binaries
-  const binPath = path.join(__dirname, '../resources/7z', process.platform, binName);
+  const appPath = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..');
+  const binPath = path.join(appPath, 'resources/7z', process.platform, binName);
 
   // 7z args:
   // x = extract with full paths
