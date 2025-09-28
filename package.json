@@ -21,6 +21,9 @@
     "directories": {
       "buildResources": "resources"
     },
+    "asarUnpack": [
+      "resources/7z/**"
+    ],
     "files": [
       "dist/**/*",
       "main.js",
