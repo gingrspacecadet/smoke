@@ -30,7 +30,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, 'store.html')).catch(err => console.error(err));
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 // --- Helper: Install (extract) archive per file ---
