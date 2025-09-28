@@ -9,5 +9,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onInstallComplete: (callback) => ipcRenderer.on('install-complete', callback),
   onInstallError: (callback) => ipcRenderer.on('install-error', callback),
   listInstalledGames: () => ipcRenderer.invoke('list-installed-games'),
-  runGame: (exePath) => ipcRenderer.invoke('run-game', exePath)
+  runGame: (exePath) => ipcRenderer.invoke('run-game', exePath),
+  notify: (opts) => ipcRenderer.invoke('notify', opts),
+  onInAppNotification: (callback) => {
+    // callback receives the notification options
+    const listener = (evt, opts) => callback(opts);
+    ipcRenderer.on('show-in-app-notification', listener);
+
+    // return a function to remove the listener if caller wants to
+    return () => ipcRenderer.removeListener('show-in-app-notification', listener);
+  },
+  onNotificationClicked: (callback) => {
+    const l = (evt, opts) => callback(opts);
+    ipcRenderer.on('notification-clicked', l);
+    return () => ipcRenderer.removeListener('notification-clicked', l);
+  },
+  openAppFolder: (name) => ipcRenderer.invoke('open-app-folder', name),
 });

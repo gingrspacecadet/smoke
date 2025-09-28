@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const fs = require('fs');
 const os = require('os');
 const https = require('https');
@@ -30,6 +30,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, 'store.html')).catch(err => console.error(err));
+  mainWindow.webContents.openDevTools();
 }
 
 // --- Helper: Install (extract) archive per file ---
@@ -180,6 +181,30 @@ function findExeRecursive(dir, base) {
   return exes[0];
 }
 
+// open folder for an installed app by name (returns boolean success)
+ipcMain.handle('open-app-folder', async (_, appName) => {
+  try {
+    const folder = path.join(APPS_DIR, appName);
+    if (!fs.existsSync(folder)) return false;
+    await shell.openPath(folder); // returns '' on success, string on error in some Electron versions
+    return true;
+  } catch (err) {
+    console.error('open-app-folder failed:', err);
+    return false;
+  }
+});
+
+// notification handler
+ipcMain.handle('notify', async (evt, opts = {}) => {
+  // opts: { title, body, icon, silent, timeoutMs }
+  // Always forward to renderer to show the in-app toast.
+  if (mainWindow?.webContents) {
+    mainWindow.webContents.send('show-in-app-notification', opts);
+    return { usedInApp: true, attemptedSystem: false };
+  }
+  return { usedInApp: false, attemptedSystem: false };
+});
+
 // List installed games with optional cover image
 ipcMain.handle('list-installed-games', async () => {
   if (!fs.existsSync(APPS_DIR)) return [];
@@ -257,8 +282,10 @@ ipcMain.on('download-game', async (event, { url, filename }) => {
       event.sender.send('download-complete', dest);
 
       try {
-        const gameName = path.basename(filename, path.extname(filename));
-        await installArchive(dest, path.join(APPS_DIR, gameName), event);
+        // Extract to the apps root - archives usually include their own
+        // top-level folder (e.g. silksong/silksong.exe). Extracting into
+        // APPS_DIR prevents creating an extra nested folder.
+        await installArchive(dest, APPS_DIR, event);
       } catch (err) {
         console.error('Install error:', err);
         event.sender.send('install-error', filename);
